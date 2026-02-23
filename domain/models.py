@@ -18,3 +18,7 @@ class Card:
 class Reading:
     context: DecisionContext
     cards: List[Card]
+@dataclass
+class ReadingResult:
+    cards: List[Card]
+    analysis: str
