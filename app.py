@@ -23,10 +23,6 @@ html, body, [class*="css"]  {
     color: #e6e6e6;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
-h1 {
-    font-weight: 700;
-    letter-spacing: 1px;
-}
 .stButton>button {
     border-radius: 12px;
     padding: 0.6em 1.4em;
@@ -34,9 +30,6 @@ h1 {
     background-color: #1f2937;
     color: white;
     border: 1px solid #333;
-}
-.stButton>button:hover {
-    background-color: #111827;
 }
 .card-box {
     padding: 1.2em;
@@ -64,74 +57,95 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =========================
-# LANGUAGE SWITCH
+# LANGUAGE CONFIG (สารตั้งต้นภาษา)
 # =========================
-language = st.radio("Language / ภาษา", ["English", "ไทย"], horizontal=True)
-
-# =========================
-# TEXT MAP
-# =========================
-TEXT = {
-    "English": {
+LANGUAGES = {
+    "en": {
+        "label": "English",
         "title": "Clarity Deck",
         "subtitle": "Structured reflection for decision clarity.",
-        "mode": "Choose your reflection depth:",
+        "mode": "Choose reflection depth:",
         "reveal": "Reveal Reflection",
         "insight": "Structural Insight",
         "history": "Your Reflection Session",
-        "no_history": "No reflections yet.",
         "reset": "Reset Session",
-        "type": "Type"
+        "type": "Type",
+        "no_history": "No reflections yet."
     },
-    "ไทย": {
+    "th": {
+        "label": "ไทย",
         "title": "Clarity Deck",
         "subtitle": "ระบบสะท้อนความคิดเพื่อความชัดเจนในการตัดสินใจ",
         "mode": "เลือกระดับการสะท้อน:",
         "reveal": "เปิดการสะท้อน",
         "insight": "การวิเคราะห์โครงสร้าง",
         "history": "ประวัติการสะท้อนของคุณ",
-        "no_history": "ยังไม่มีการสะท้อน",
         "reset": "รีเซ็ตเซสชัน",
-        "type": "ประเภท"
+        "type": "ประเภท",
+        "no_history": "ยังไม่มีการสะท้อน"
     }
 }
 
-T = TEXT[language]
+# language selector (key-based ไม่ใช้ string ตรง)
+lang_key = st.radio(
+    "Language / ภาษา",
+    options=list(LANGUAGES.keys()),
+    format_func=lambda x: LANGUAGES[x]["label"],
+    horizontal=True
+)
+
+T = LANGUAGES[lang_key]
 
 # =========================
-# DECK (2 LANGUAGE)
+# DECK BASE STRUCTURE (สารตั้งต้นจริง)
 # =========================
-deck = [
+DECK = [
     {
+        "id": "flow",
         "name": "FLOW",
-        "type": {"English": "Movement", "ไทย": "การเคลื่อนไหว"},
+        "type": {
+            "en": "Movement",
+            "th": "การเคลื่อนไหว"
+        },
         "meaning": {
-            "English": "Momentum is building. Continue forward intentionally.",
-            "ไทย": "แรงขับกำลังก่อตัว เดินหน้าต่ออย่างมีเจตนา"
+            "en": "Momentum is building. Continue forward intentionally.",
+            "th": "แรงขับกำลังก่อตัว เดินหน้าต่ออย่างมีเจตนา"
         }
     },
     {
+        "id": "echo",
         "name": "ECHO",
-        "type": {"English": "Reflection", "ไทย": "การสะท้อน"},
+        "type": {
+            "en": "Reflection",
+            "th": "การสะท้อน"
+        },
         "meaning": {
-            "English": "Past patterns are resurfacing. Notice repetition.",
-            "ไทย": "รูปแบบเดิมกำลังย้อนกลับมา สังเกตความซ้ำ"
+            "en": "Past patterns are resurfacing. Notice repetition.",
+            "th": "รูปแบบเดิมกำลังย้อนกลับมา สังเกตความซ้ำ"
         }
     },
     {
+        "id": "fracture",
         "name": "FRACTURE",
-        "type": {"English": "Tension", "ไทย": "ความตึงเครียด"},
+        "type": {
+            "en": "Tension",
+            "th": "ความตึงเครียด"
+        },
         "meaning": {
-            "English": "There is instability. Something needs restructuring.",
-            "ไทย": "มีความไม่มั่นคง บางอย่างต้องปรับโครงสร้างใหม่"
+            "en": "There is instability. Something needs restructuring.",
+            "th": "มีความไม่มั่นคง บางอย่างต้องปรับโครงสร้างใหม่"
         }
     },
     {
+        "id": "gravity",
         "name": "GRAVITY",
-        "type": {"English": "Reality", "ไทย": "ความจริง"},
+        "type": {
+            "en": "Reality",
+            "th": "ความจริง"
+        },
         "meaning": {
-            "English": "A hard truth requires your attention.",
-            "ไทย": "ความจริงบางอย่างต้องการการยอมรับ"
+            "en": "A hard truth requires your attention.",
+            "th": "ความจริงบางอย่างต้องการการยอมรับ"
         }
     }
 ]
@@ -140,16 +154,16 @@ deck = [
 # FUNCTIONS
 # =========================
 def draw_cards(n):
-    return random.sample(deck, n)
+    return random.sample(DECK, n)
 
 def analyze_structure(cards):
-    types = [c["type"][language] for c in cards]
+    types = [c["type"][lang_key] for c in cards]
     dominant = Counter(types).most_common(1)[0][0]
 
-    if language == "English":
-        return f"Dominant theme: {dominant}. Reflect on its influence."
+    if lang_key == "en":
+        return f"Dominant theme: {dominant}. Reflect on how this shapes your current decision."
     else:
-        return f"ธีมหลักคือ {dominant} พิจารณาว่ามันส่งผลอย่างไรต่อคุณ"
+        return f"ธีมหลักคือ {dominant} ลองพิจารณาว่าสิ่งนี้กำลังกำหนดการตัดสินใจของคุณอย่างไร"
 
 # =========================
 # UI
@@ -170,25 +184,24 @@ if st.button(T["reveal"]):
         block = f"""
         <div class="card-box">
             <h3>{card['name']}</h3>
-            <p><b>{T['type']}:</b> {card['type'][language]}</p>
-            <p>{card['meaning'][language]}</p>
+            <p><b>{T['type']}:</b> {card['type'][lang_key]}</p>
+            <p>{card['meaning'][lang_key]}</p>
         </div>
         """
         st.markdown(block, unsafe_allow_html=True)
-        result_text += f"{card['name']} - {card['meaning'][language]}\n"
+
+        result_text += f"{card['name']} - {card['meaning'][lang_key]}\n"
 
     insight = analyze_structure(cards)
 
     st.markdown(f"### {T['insight']}")
     st.write(insight)
 
-    entry = {
+    st.session_state.history.append({
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "mode": draw_mode,
         "result": result_text + "\n" + insight
-    }
-
-    st.session_state.history.append(entry)
+    })
 
 # =========================
 # HISTORY
