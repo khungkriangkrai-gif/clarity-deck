@@ -1,3 +1,7 @@
+from domain.tarot_engine import TarotEngine
+from domain.models import Reading
+
+
 class RunReadingUseCase:
 
     def __init__(self, deck_repo, gpt_client):
