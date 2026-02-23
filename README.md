@@ -1,1 +1,3 @@
-# clarity-deck
+streamlit
+pandas
+numpy
