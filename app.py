@@ -37,7 +37,7 @@ if st.button("Generate AI Insight"):
         fear=fear,
     )
 
-    gpt = GPTInsightClient
+  gpt = GPTClient()
     deck_repo = DeckRepository()
     use_case = RunReadingUseCase(deck_repo, gpt)
 
