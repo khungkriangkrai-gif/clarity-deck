@@ -1,8 +1,3 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import streamlit as st
 
 from domain.models import DecisionContext
@@ -32,9 +27,10 @@ if st.button("Generate AI Insight"):
         fear=fear,
     )
 
-    deck_repo = DeckRepository()
-    gpt = GPTClient()
-    use_case = RunReadingUseCase(deck_repo, gpt)
+    use_case = RunReadingUseCase(
+        deck_repository=DeckRepository(),
+        gpt_client=GPTClient(),
+    )
 
     reading, analysis = use_case.execute(context, num_cards)
 
