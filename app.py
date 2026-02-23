@@ -28,8 +28,8 @@ if st.button("Generate AI Insight"):
     )
 
     use_case = RunReadingUseCase(
-        deck_repository=DeckRepository(),
-        gpt_client=GPTClient(),
+        DeckRepository(),
+        GPTClient(),
     )
 
     reading, analysis = use_case.execute(context, num_cards)
