@@ -2,23 +2,18 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import streamlit as st
-import os
 
 from domain.models import DecisionContext
 from infrastructure.gpt_client import GPTClient
-
-deck_repo = DeckRepository()
-gpt = GPTClient()
-
-use_case = RunReadingUseCase(deck_repo, gpt)
 from infrastructure.deck_repository import DeckRepository
 from application.use_cases import RunReadingUseCase
+
 
 st.set_page_config(page_title="Clarity Deck AI", layout="centered")
 
 st.title("Clarity Deck — AI Insight Engine")
-
 st.subheader("1. Define Your Decision Context")
 
 topic = st.text_input("Topic")
@@ -37,8 +32,8 @@ if st.button("Generate AI Insight"):
         fear=fear,
     )
 
-    gpt = GPTClient()
     deck_repo = DeckRepository()
+    gpt = GPTClient()
     use_case = RunReadingUseCase(deck_repo, gpt)
 
     reading, analysis = use_case.execute(context, num_cards)
