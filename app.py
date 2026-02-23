@@ -18,20 +18,14 @@ fear = st.text_input("Main Fear")
 
 num_cards = st.radio("Number of Cards", [1, 3, 5])
 
-if st.button("Generate AI Insight"):
+for card in reading.cards:
 
-    context = DecisionContext(
-        topic=topic,
-        situation=situation,
-        goal=goal,
-        fear=fear,
-    )
-
-    deck_repo = DeckRepository()
-    gpt = GPTClient()
-    use_case = RunReadingUseCase(deck_repo, gpt)
-
-    reading, analysis = use_case.execute(context, num_cards)
+    st.markdown(f"""
+    <div class="card-box">
+        <div class="card-title">{card.name}</div>
+        <div class="card-description">{card.meaning}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ---------- Premium CSS ----------
     st.markdown("""
