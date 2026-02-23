@@ -1,39 +1,36 @@
-import os
-from openai import OpenAI
-
+from domain.models import DecisionContext
 
 class GPTClient:
-    def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY not found")
+    def analyze(self, context: DecisionContext, cards: list):
 
-        self.client = OpenAI(api_key=api_key)
+        card_names = ", ".join([card.name for card in cards])
 
-    def analyze(self, context: str, cards: list[dict]) -> str:
-        card_text = "\n".join(
-            f"- {c['title']}: {c['description']}"
-            for c in cards
-        )
+        # simple rule-based synthesis
+        insight = f"""
+Strategic Insight (Prototype Mode)
 
-        prompt = f"""
-You are a strategic AI advisor.
+Topic: {context.topic}
 
-Decision Context:
-{context}
+Cards Drawn: {card_names}
 
-Available Cards:
-{card_text}
+Current Situation:
+{context.situation}
 
-Provide a structured strategic insight.
+Desired Goal:
+{context.goal}
+
+Main Fear:
+{context.fear}
+
+Interpretation:
+The cards suggest that clarity will emerge through deliberate action.
+Your fear appears to be tied to uncertainty rather than actual constraint.
+Focus on structured decision-making and incremental progress.
+
+Recommended Action:
+1. Break the goal into 3 concrete steps.
+2. Identify the worst-case scenario realistically.
+3. Act despite incomplete information.
 """
 
-        response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a strategic decision intelligence engine."},
-                {"role": "user", "content": prompt},
-            ],
-        )
-
-        return response.choices[0].message.content
+        return insight.strip()
