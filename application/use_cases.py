@@ -1,21 +1,20 @@
+from domain.models import ReadingResult
 from domain.tarot_engine import TarotEngine
 from domain.models import Reading
 
-
 class RunReadingUseCase:
 
-    def __init__(self, deck_repo, gpt_client):
-        self.deck_repo = deck_repo
-        self.engine = TarotEngine()
-        self.gpt = gpt_client
+    def __init__(self, deck_repository, gpt_client):
+        self.deck_repository = deck_repository
+        self.gpt_client = gpt_client
 
     def execute(self, context, num_cards):
 
-        deck = self.deck_repo.load_deck()
-        cards = self.engine.draw(deck, num_cards)
+        deck = self.deck_repository.load_deck()
 
-        reading = Reading(context=context, cards=cards)
+        import random
+        cards = random.sample(deck, num_cards)
 
-        ai_analysis = self.gpt.analyze(context, cards)
+        analysis = self.gpt_client.analyze(context, cards)
 
-        return reading, ai_analysis
+        return ReadingResult(cards=cards, analysis=analysis)
