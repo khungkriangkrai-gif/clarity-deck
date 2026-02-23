@@ -1,23 +1,22 @@
+import os
 from openai import OpenAI
+
 
 class GPTClient:
 
-    def __init__(self, api_key):
+    def __init__(self, api_key=None):
+        api_key = api_key or os.environ.get("OPENAI_API_KEY")
+
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not set")
+
         self.client = OpenAI(api_key=api_key)
 
         self.system_prompt = """
 You are the Clarity Deck Intelligence.
-
 You do not predict the future.
 You reveal structural truth.
-
-You analyze psychological patterns, decision tension, and energetic direction.
-
-Tone: precise, grounded, strategic.
-No mysticism. No destiny claims.
-
 Clarity over comfort.
-Precision over poetry.
 """
 
     def analyze(self, context, cards):
@@ -28,19 +27,15 @@ Precision over poetry.
 
         user_prompt = f"""
 USER CONTEXT:
-{context}
+Topic: {context.topic}
+Situation: {context.situation}
+Goal: {context.goal}
+Fear: {context.fear}
 
 DRAWN CARDS:
 {card_block}
 
 Follow Clarity Deck Protocol.
-Use required structure:
-CORE FORCE
-WHAT YOU’RE AVOIDING
-STRUCTURAL TRUTH
-CLARITY SHIFT
-
-Do not predict.
 """
 
         response = self.client.chat.completions.create(
