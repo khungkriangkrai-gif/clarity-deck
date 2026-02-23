@@ -27,20 +27,23 @@ if st.button("Generate AI Insight"):
         fear=fear,
     )
 
-    use_case = RunReadingUseCase(
-        DeckRepository(),
-        GPTClient(),
-    )
+    deck_repo = DeckRepository()
+    gpt = GPTClient()
+    use_case = RunReadingUseCase(deck_repo, gpt)
 
     reading, analysis = use_case.execute(context, num_cards)
 
-   st.divider()
-st.header("Cards Drawn")
+    st.divider()
+    st.header("Cards Drawn")
 
-for card in reading.cards:
-    if hasattr(card, "name"):
-        st.markdown(f"### {card.name}")
-        if hasattr(card, "meaning"):
-            st.write(card.meaning)
-    else:
-        st.markdown(f"### {card}")
+    for card in reading.cards:
+        if hasattr(card, "name"):
+            st.markdown(f"### {card.name}")
+            if hasattr(card, "meaning"):
+                st.write(card.meaning)
+        else:
+            st.markdown(f"### {card}")
+
+    st.divider()
+    st.header("AI Strategic Insight")
+    st.write(analysis)
