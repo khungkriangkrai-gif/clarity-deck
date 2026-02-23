@@ -33,27 +33,58 @@ if st.button("Generate AI Insight"):
 
     reading, analysis = use_case.execute(context, num_cards)
 
+    # ---------- Premium CSS ----------
+    st.markdown("""
+    <style>
+    .card-box {
+        background-color: #111827;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        border: 1px solid #1f2937;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .card-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .card-description {
+        font-size: 15px;
+        opacity: 0.85;
+        line-height: 1.6;
+    }
+    .insight-box {
+        background-color: #0f172a;
+        padding: 28px;
+        border-radius: 18px;
+        margin-top: 30px;
+        border: 1px solid #1e293b;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.35);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.divider()
-    st.header("Cards Drawn")
+    st.subheader("Cards Drawn")
 
     for card in reading.cards:
-        if hasattr(card, "name"):
-            st.markdown(f"### {card.name}")
-            if hasattr(card, "meaning"):
-                st.write(card.meaning)
+
+        if isinstance(card, dict):
+            title = card.get("title", "Untitled Card")
+            description = card.get("description", "")
         else:
-            st.markdown(f"### {card}")
+            title = str(card)
+            description = ""
 
-   st.divider()
-st.header("Cards Drawn")
+        st.markdown(f"""
+        <div class="card-box">
+            <div class="card-title">{title}</div>
+            <div class="card-description">{description}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-for card in reading.cards:
-    if isinstance(card, dict):
-        st.markdown(f"### {card.get('title', 'Untitled Card')}")
-        st.write(card.get('description', ''))
-    elif hasattr(card, "name"):
-        st.markdown(f"### {card.name}")
-        if hasattr(card, "meaning"):
-            st.write(card.meaning)
-    else:
-        st.markdown(f"### {card}")
+    st.markdown('<div class="insight-box">', unsafe_allow_html=True)
+    st.subheader("AI Strategic Insight")
+    st.write(analysis)
+    st.markdown('</div>', unsafe_allow_html=True)
