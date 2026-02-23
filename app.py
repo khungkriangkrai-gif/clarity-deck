@@ -34,13 +34,13 @@ if st.button("Generate AI Insight"):
 
     reading, analysis = use_case.execute(context, num_cards)
 
-    st.divider()
-    st.header("Cards Drawn")
+   st.divider()
+st.header("Cards Drawn")
 
-    for card in reading.cards:
+for card in reading.cards:
+    if hasattr(card, "name"):
         st.markdown(f"### {card.name}")
-        st.write(card.meaning)
-
-    st.divider()
-    st.header("AI Strategic Insight")
-    st.write(analysis)
+        if hasattr(card, "meaning"):
+            st.write(card.meaning)
+    else:
+        st.markdown(f"### {card}")
