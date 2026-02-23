@@ -6,7 +6,12 @@ import streamlit as st
 import os
 
 from domain.models import DecisionContext
-from infrastructure.gpt_client import GPTInsightClient
+from infrastructure.gpt_client import GPTClient
+
+deck_repo = DeckRepository()
+gpt = GPTClient()
+
+use_case = RunReadingUseCase(deck_repo, gpt)
 from infrastructure.deck_repository import DeckRepository
 from application.use_cases import RunReadingUseCase
 
@@ -32,7 +37,7 @@ if st.button("Generate AI Insight"):
         fear=fear,
     )
 
-    gpt = GPTInsightClient(api_key=st.secrets["OPENAI_API_KEY"])
+    gpt = GPTInsightClient
     deck_repo = DeckRepository()
     use_case = RunReadingUseCase(deck_repo, gpt)
 
