@@ -1,48 +1,55 @@
-from domain.models import DecisionContext
-
+from openai import OpenAI
 
 class GPTClient:
 
-    def analyze(self, context: DecisionContext, cards):
+    def __init__(self, api_key):
+        self.client = OpenAI(api_key=api_key)
 
-        # รองรับหลายรูปแบบ input
-        if hasattr(cards, "cards"):
-            cards = cards.cards
+        self.system_prompt = """
+You are the Clarity Deck Intelligence.
 
-        card_names_list = []
+You do not predict the future.
+You reveal structural truth.
 
-        for c in cards:
-            if hasattr(c, "name"):
-                card_names_list.append(c.name)
-            else:
-                card_names_list.append(str(c))
+You analyze psychological patterns, decision tension, and energetic direction.
 
-        card_names = ", ".join(card_names_list)
+Tone: precise, grounded, strategic.
+No mysticism. No destiny claims.
 
-        insight = f"""
-Strategic Insight (Prototype Mode)
-
-Topic: {context.topic}
-
-Cards Drawn: {card_names}
-
-Current Situation:
-{context.situation}
-
-Desired Goal:
-{context.goal}
-
-Main Fear:
-{context.fear}
-
-Interpretation:
-The cards suggest that clarity will come from decisive action.
-Your fear appears to be driven more by uncertainty than real limitation.
-
-Recommended Action:
-1. Define one concrete next move.
-2. Reduce ambiguity with data.
-3. Act before confidence is perfect.
+Clarity over comfort.
+Precision over poetry.
 """
 
-        return insight.strip()
+    def analyze(self, context, cards):
+
+        card_block = "\n".join(
+            [f"{c['title']}: {c['description']}" for c in cards]
+        )
+
+        user_prompt = f"""
+USER CONTEXT:
+{context}
+
+DRAWN CARDS:
+{card_block}
+
+Follow Clarity Deck Protocol.
+Use required structure:
+CORE FORCE
+WHAT YOU’RE AVOIDING
+STRUCTURAL TRUTH
+CLARITY SHIFT
+
+Do not predict.
+"""
+
+        response = self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.7,
+        )
+
+        return response.choices[0].message.content
