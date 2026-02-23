@@ -15,6 +15,6 @@ class RunReadingUseCase:
         import random
         cards = random.sample(deck, num_cards)
 
-        analysis = self.gpt_client.analyze(context, cards)
+        analysis = "Mock analysis — GPT temporarily disabled."
 
         return ReadingResult(cards=cards, analysis=analysis)
