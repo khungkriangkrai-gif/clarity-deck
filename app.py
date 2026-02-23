@@ -44,6 +44,16 @@ if st.button("Generate AI Insight"):
         else:
             st.markdown(f"### {card}")
 
-    st.divider()
-    st.header("AI Strategic Insight")
-    st.write(analysis)
+   st.divider()
+st.header("Cards Drawn")
+
+for card in reading.cards:
+    if isinstance(card, dict):
+        st.markdown(f"### {card.get('title', 'Untitled Card')}")
+        st.write(card.get('description', ''))
+    elif hasattr(card, "name"):
+        st.markdown(f"### {card.name}")
+        if hasattr(card, "meaning"):
+            st.write(card.meaning)
+    else:
+        st.markdown(f"### {card}")
