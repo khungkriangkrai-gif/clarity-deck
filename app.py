@@ -45,10 +45,6 @@ h1 {
     background-color: #111827;
     margin-bottom: 1em;
 }
-.history-box {
-    font-size: 0.9em;
-    opacity: 0.8;
-}
 .footer {
     margin-top: 3em;
     font-size: 0.8em;
@@ -68,17 +64,76 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =========================
-# DECK
+# LANGUAGE SWITCH
+# =========================
+language = st.radio("Language / ภาษา", ["English", "ไทย"], horizontal=True)
+
+# =========================
+# TEXT MAP
+# =========================
+TEXT = {
+    "English": {
+        "title": "Clarity Deck",
+        "subtitle": "Structured reflection for decision clarity.",
+        "mode": "Choose your reflection depth:",
+        "reveal": "Reveal Reflection",
+        "insight": "Structural Insight",
+        "history": "Your Reflection Session",
+        "no_history": "No reflections yet.",
+        "reset": "Reset Session",
+        "type": "Type"
+    },
+    "ไทย": {
+        "title": "Clarity Deck",
+        "subtitle": "ระบบสะท้อนความคิดเพื่อความชัดเจนในการตัดสินใจ",
+        "mode": "เลือกระดับการสะท้อน:",
+        "reveal": "เปิดการสะท้อน",
+        "insight": "การวิเคราะห์โครงสร้าง",
+        "history": "ประวัติการสะท้อนของคุณ",
+        "no_history": "ยังไม่มีการสะท้อน",
+        "reset": "รีเซ็ตเซสชัน",
+        "type": "ประเภท"
+    }
+}
+
+T = TEXT[language]
+
+# =========================
+# DECK (2 LANGUAGE)
 # =========================
 deck = [
-    {"name": "FLOW", "type": "Movement", "meaning": "Momentum is building. Continue forward intentionally."},
-    {"name": "ECHO", "type": "Reflection", "meaning": "Past patterns are resurfacing. Notice repetition."},
-    {"name": "FRACTURE", "type": "Tension", "meaning": "There is instability. Something needs restructuring."},
-    {"name": "GRAVITY", "type": "Reality", "meaning": "A hard truth requires your attention."},
-    {"name": "INFINITY", "type": "Expansion", "meaning": "The situation is larger than your current frame."},
-    {"name": "PIVOT", "type": "Movement", "meaning": "A directional shift may be necessary."},
-    {"name": "MASK", "type": "Reflection", "meaning": "Something unseen is influencing outcomes."},
-    {"name": "ANCHOR", "type": "Reality", "meaning": "Stability must be reclaimed before progress."},
+    {
+        "name": "FLOW",
+        "type": {"English": "Movement", "ไทย": "การเคลื่อนไหว"},
+        "meaning": {
+            "English": "Momentum is building. Continue forward intentionally.",
+            "ไทย": "แรงขับกำลังก่อตัว เดินหน้าต่ออย่างมีเจตนา"
+        }
+    },
+    {
+        "name": "ECHO",
+        "type": {"English": "Reflection", "ไทย": "การสะท้อน"},
+        "meaning": {
+            "English": "Past patterns are resurfacing. Notice repetition.",
+            "ไทย": "รูปแบบเดิมกำลังย้อนกลับมา สังเกตความซ้ำ"
+        }
+    },
+    {
+        "name": "FRACTURE",
+        "type": {"English": "Tension", "ไทย": "ความตึงเครียด"},
+        "meaning": {
+            "English": "There is instability. Something needs restructuring.",
+            "ไทย": "มีความไม่มั่นคง บางอย่างต้องปรับโครงสร้างใหม่"
+        }
+    },
+    {
+        "name": "GRAVITY",
+        "type": {"English": "Reality", "ไทย": "ความจริง"},
+        "meaning": {
+            "English": "A hard truth requires your attention.",
+            "ไทย": "ความจริงบางอย่างต้องการการยอมรับ"
+        }
+    }
 ]
 
 # =========================
@@ -88,41 +143,25 @@ def draw_cards(n):
     return random.sample(deck, n)
 
 def analyze_structure(cards):
-    types = [c["type"] for c in cards]
-    count = Counter(types)
-    dominant = count.most_common(1)[0][0]
+    types = [c["type"][language] for c in cards]
+    dominant = Counter(types).most_common(1)[0][0]
 
-    if dominant == "Movement":
-        return "This phase is action-oriented. Movement energy dominates."
-    elif dominant == "Reflection":
-        return "Patterns and self-awareness dominate this moment."
-    elif dominant == "Reality":
-        return "Grounded truths require attention before progress."
-    elif dominant == "Tension":
-        return "Internal or structural conflict is present."
+    if language == "English":
+        return f"Dominant theme: {dominant}. Reflect on its influence."
     else:
-        return "Expansion and scale are emerging themes."
+        return f"ธีมหลักคือ {dominant} พิจารณาว่ามันส่งผลอย่างไรต่อคุณ"
 
 # =========================
 # UI
 # =========================
-st.title("Clarity Deck")
-st.caption("Structured reflection for decision clarity.")
+st.title(T["title"])
+st.caption(T["subtitle"])
 
-draw_mode = st.radio("Choose your reflection depth:", ["1 Card", "3 Cards", "5 Cards"])
+draw_mode = st.radio(T["mode"], ["1 Card", "3 Cards", "5 Cards"])
 
-# =========================
-# REVEAL BUTTON
-# =========================
-if st.button("Reveal Reflection"):
+if st.button(T["reveal"]):
 
-    if draw_mode == "1 Card":
-        n = 1
-    elif draw_mode == "3 Cards":
-        n = 3
-    else:
-        n = 5
-
+    n = int(draw_mode[0])
     cards = draw_cards(n)
 
     result_text = ""
@@ -131,52 +170,43 @@ if st.button("Reveal Reflection"):
         block = f"""
         <div class="card-box">
             <h3>{card['name']}</h3>
-            <p><b>Type:</b> {card['type']}</p>
-            <p>{card['meaning']}</p>
+            <p><b>{T['type']}:</b> {card['type'][language]}</p>
+            <p>{card['meaning'][language]}</p>
         </div>
         """
         st.markdown(block, unsafe_allow_html=True)
-        result_text += f"{card['name']} ({card['type']}): {card['meaning']}\n"
+        result_text += f"{card['name']} - {card['meaning'][language]}\n"
 
     insight = analyze_structure(cards)
 
-    st.markdown("### Structural Insight")
+    st.markdown(f"### {T['insight']}")
     st.write(insight)
 
-    result_text += f"\nInsight: {insight}"
-
-    # Save to session history
     entry = {
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "mode": draw_mode,
-        "result": result_text
+        "result": result_text + "\n" + insight
     }
 
     st.session_state.history.append(entry)
 
 # =========================
-# SESSION HISTORY
+# HISTORY
 # =========================
 st.markdown("---")
-st.markdown("## Your Reflection Session")
+st.markdown(f"## {T['history']}")
 
 if st.session_state.history:
     for item in reversed(st.session_state.history):
         with st.expander(f"{item['timestamp']} — {item['mode']}"):
             st.write(item["result"])
 else:
-    st.info("No reflections yet.")
+    st.info(T["no_history"])
 
-# =========================
-# RESET
-# =========================
-if st.button("Reset Session"):
+if st.button(T["reset"]):
     st.session_state.history = []
     st.experimental_rerun()
 
-# =========================
-# FOOTER
-# =========================
 st.markdown(
     f"<div class='footer'>Session ID: {st.session_state.session_id}</div>",
     unsafe_allow_html=True
