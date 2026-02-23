@@ -1,16 +1,23 @@
 from domain.models import DecisionContext
 
+
 class GPTClient:
 
-    def analyze(self, context: DecisionContext, reading):
+    def analyze(self, context: DecisionContext, cards):
 
-        # รองรับทั้ง list และ Reading object
-        if hasattr(reading, "cards"):
-            cards = reading.cards
-        else:
-            cards = reading
+        # รองรับหลายรูปแบบ input
+        if hasattr(cards, "cards"):
+            cards = cards.cards
 
-        card_names = ", ".join([c.name for c in cards])
+        card_names_list = []
+
+        for c in cards:
+            if hasattr(c, "name"):
+                card_names_list.append(c.name)
+            else:
+                card_names_list.append(str(c))
+
+        card_names = ", ".join(card_names_list)
 
         insight = f"""
 Strategic Insight (Prototype Mode)
@@ -29,12 +36,12 @@ Main Fear:
 {context.fear}
 
 Interpretation:
-The cards indicate that clarity will come from structured action.
-Your fear is likely driven by uncertainty rather than real limitation.
+The cards suggest that clarity will come from decisive action.
+Your fear appears to be driven more by uncertainty than real limitation.
 
 Recommended Action:
-1. Define the next concrete move.
-2. Reduce ambiguity through data.
+1. Define one concrete next move.
+2. Reduce ambiguity with data.
 3. Act before confidence is perfect.
 """
 
